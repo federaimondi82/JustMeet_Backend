@@ -49,7 +49,7 @@ public class EventoController {
 	@PostMapping(value="/eventi/nuovo/{nome}:{aaaa}:{mm}:{gg}:{HH}:{MM}:{min}:"
 			+ "{max}:{descr}:{durata}:{nomeLuogo}:{citta}:{indirizzo}:{civico}:"
 			+ "{cap}:{prov}:{idCat}:{idUtente}")
-	public synchronized boolean creaEvento(@PathVariable String nome,@PathVariable String aaaa,
+	public  boolean creaEvento(@PathVariable String nome,@PathVariable String aaaa,
 			@PathVariable String mm,@PathVariable String gg,@PathVariable String HH,@PathVariable String MM,
 			@PathVariable String min,@PathVariable String max,@PathVariable String descr,
 			@PathVariable String durata,@PathVariable String nomeLuogo,@PathVariable String citta,@PathVariable String indirizzo,
@@ -150,29 +150,59 @@ public class EventoController {
 	@GetMapping(value="/eventi/utenti/{id}")
 	public List<String> getEventi(@PathVariable String idUtente){
 		
-		String query="Select L.id,L.citta,L.indirizzo,L.civico,L.cap,L.provincia,L.nome,"
+		
+		String query="SELECT L.id,L.citta,L.indirizzo,L.civico,L.cap,L.provincia,L.nome,"
 				+ "E.id,E.nome,E.data,E.orario,E.min,E.max,E.descrizione,E.durata,E.idUtente,E.idCategoria,"
 				+ "C.id,C.nome,C.descrizione "
-				+ "from L luogo,E evento,C categoria, U utente "
-				+ "where U.id='"+idUtente+"' "
+				+ "FROM luogo L,evento E,categoria C,utente U "
+				+ "where U.id="+Integer.parseInt(idUtente)+" "
 				+ "and E.idLuogo=L.id "
-				+ "and C.id=E.idCategoria"
-				+ "group by E.id"
-				+ "order by E.data,E.ora";
+				+ "and C.id=E.idCategoria "
+				+ "group by E.id "
+				+ "order by E.data,E.orario";
 		ResultSet result=null;
 		try {
 			result=DBConnection.getInstance().sendQuery(query);
 			
 			while(result.next()) {
-				//TODO
+				//LUOGO
+				System.out.println(result.getInt(1));//id
+				System.out.println(result.getString(2));//citta
+				System.out.println(result.getString(3));//indir
+				System.out.println(result.getString(4));//civico
+				System.out.println(result.getString(5));//cap
+				System.out.println(result.getString(6));//prov
+				System.out.println(result.getString(7));//nome
+				//EVENTO
+				System.out.println(result.getInt(8));//id
+				System.out.println(result.getString(9));
+				System.out.println(result.getString(10));
+				System.out.println(result.getString(11));
+				System.out.println(result.getInt(12));
+				System.out.println(result.getInt(13));
+				System.out.println(result.getString(14));
+				System.out.println(result.getInt(15));
+				System.out.println(result.getInt(16));//idUtente
+				System.out.println(result.getInt(17));//id categoria
+				System.out.println(result.getInt(18));//id categoria
+				//CATEGORIA
+				System.out.println(result.getString(19));
+				System.out.println(result.getString(20));
 			}
 		}catch(SQLException e) {
 			//TODO cominciare a scrivere dei log
+			System.out.println("");
 		}
 		
 		
 		return null;
 	}
 
+	@GetMapping(value="/eventi/{id}")
+	public String getEvento(@PathVariable String id) {
+		
+		return null;
+		
+	}
 	
 }

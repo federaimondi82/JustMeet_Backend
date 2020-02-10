@@ -29,7 +29,7 @@ public class LuogoController {
 	 * @return l'id del nuovo luogo
 	 */
 	@PostMapping(value="/luogo/{citta}:{indirizzo}:{civico}:{cap}:{prov}:{nome}")
-	public synchronized int postluogo(@PathVariable String citta,@PathVariable String indirizzo,
+	public  int postluogo(@PathVariable String citta,@PathVariable String indirizzo,
 			@PathVariable String civico,@PathVariable String cap,@PathVariable String prov,@PathVariable String nome){
 		
 		//viene cercato se nel DB e' gia' presente il luogo da salvare
@@ -55,7 +55,7 @@ public class LuogoController {
 	 * @return Ritorna l'id del luogo,se presente; ritorna -1 se non presente
 	 */
 	@GetMapping(value="/luoghi/{citta}:{indirizzo}:{civico}:{cap}:{provincia}:{nome}")
-	public synchronized int getIdLuogo(@PathVariable String citta,@PathVariable String indirizzo,@PathVariable String civico
+	public  int getIdLuogo(@PathVariable String citta,@PathVariable String indirizzo,@PathVariable String civico
 			,@PathVariable String cap,@PathVariable String prov,@PathVariable String nome) {
 		
 		try {			

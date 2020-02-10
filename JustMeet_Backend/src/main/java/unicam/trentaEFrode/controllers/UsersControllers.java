@@ -27,7 +27,7 @@ import unicam.trentaEFrode.domain.UtenteRegistrato;
 public class UsersControllers {
 	
 	@GetMapping(value="/testConnessione")
-	public synchronized boolean getConnessione() {
+	public boolean getConnessione() {
 		return true;
 	}
 	
@@ -38,7 +38,7 @@ public class UsersControllers {
 	 * @return ritorna tutti i dati dell'itente con uno specifico id
 	 */
 	//@GetMapping(value="/utenti/{id}")
-	public synchronized UtenteRegistrato getUserData(@PathVariable String id) {
+	public UtenteRegistrato getUserData(@PathVariable String id) {
 		
 		ResultSet result2=null;
 		UtenteRegistrato u=null;
@@ -72,7 +72,7 @@ public class UsersControllers {
 	 * @See List<T>
 	 */
 	@GetMapping(value="/utenti")
-	public synchronized List<UtenteRegistrato> getUsers() {
+	public List<UtenteRegistrato> getUsers() {
 		
 		//TODO serve?
 		
@@ -117,7 +117,7 @@ public class UsersControllers {
 	 * @return Ritorna true se la registrazione e' andata a buon fine altriemnti false
 	 */
 	@PostMapping(value="/utenti/{nome}:{cognome}:{email}:{nickname}:{password}:{ripetiPassword}:{dataDiNascita}:{cap}:{citta}:{interessi}")
-	public synchronized boolean registraUtente(@PathVariable String nome,@PathVariable String cognome,
+	public boolean registraUtente(@PathVariable String nome,@PathVariable String cognome,
 			@PathVariable String email,@PathVariable String nickname,@PathVariable String password,
 			@PathVariable String ripetiPassword,@PathVariable String dataDiNascita,
 			@PathVariable String cap,@PathVariable String citta,@PathVariable String interessi
@@ -126,7 +126,7 @@ public class UsersControllers {
 			
 			System.out.println("dataDiNascita:"+dataDiNascita);
 			
-			//viene controllato se l'email o il nickName sono già stati usati
+			//viene controllato se l'email o il nickName sono gia' stati usati
 			//se il controllo va a buon fine vine fatta una INSERT sul database
 		if(utentePresente(email)==false && nickNamePresente(nickname)==false) {
 			String query="INSERT INTO utente(nome,cognome,email,nickname,pass,pass2,dataNascita,citta,cap)"
@@ -218,7 +218,7 @@ public class UsersControllers {
 	 * @return
 	 */
 	@GetMapping(value="/utenti/{id}/events")
-	public synchronized List<String> getUserEvents(@PathVariable String id){
+	public List<String> getUserEvents(@PathVariable String id){
 		
 //evento sul db:id,titolo,dataInizio,min,max,descrizion,durata,idUtente,idLuogo,idCategoria
 //luogo:id,citta,indirizzo,civico,cap,provincia,nome
@@ -251,7 +251,7 @@ public class UsersControllers {
 	 * @return ritorna true se il nickname e' gia' presente, altriemnti false
 	 */
 	@GetMapping(value="/utenti/nickname/{nickname}")
-	public synchronized boolean nickNamePresente(@PathVariable String nickname) {
+	public boolean nickNamePresente(@PathVariable String nickname) {
 		
 		ResultSet result=null;
 		int id=0;
@@ -278,9 +278,9 @@ public class UsersControllers {
 	 * @return una istanza di utenteRegistrato (con la rest ritorno comunuqe un json)
 	 */
 	@GetMapping(value="/utenti/auth/{email}:{pass}")
-	public synchronized UtenteRegistrato autenticazione(@PathVariable String email,@PathVariable String pass) {
+	public UtenteRegistrato autenticazione(@PathVariable String email,@PathVariable String pass) {
 		
-		String query="select id from utente where email='"+email+"' and pass='"+pass+"'";
+		String query="SELECT id FROM utente WHERE email='"+email+"' and pass='"+pass+"'";
 		ResultSet result=null;
 		int id=0;
 		UtenteRegistrato u=null;

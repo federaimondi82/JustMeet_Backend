@@ -16,7 +16,7 @@ import unicam.trentaEFrode.domain.UtenteRegistrato;
 public class CategorieController {
 
 	@GetMapping(value="/cat")
-	public synchronized String postCategorie() {
+	public  String postCategorie() {
 		
 		String json="";
 		ResultSet result=null;
