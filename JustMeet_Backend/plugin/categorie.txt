@@ -1,0 +1,4 @@
+1;sport;calcio
+2;sport;pallavolo
+3;sport;ping pong
+4;cibo;cucina italiana
