@@ -29,25 +29,28 @@ public class LuogoController {
 	 * @return l'id del nuovo luogo
 	 */
 	@PostMapping(value="/luogo/{citta}:{indirizzo}:{civico}:{cap}:{prov}:{nome}")
-	public  int postluogo(@PathVariable String citta,@PathVariable String indirizzo,
+	public int postluogo(@PathVariable String citta,@PathVariable String indirizzo,
 			@PathVariable String civico,@PathVariable String cap,@PathVariable String prov,@PathVariable String nome){
+		if(citta==null || indirizzo==null || civico==null || cap==null || prov==null || nome==null) throw new NullPointerException("elemento nullo");
+		else if(citta.equals("") || indirizzo.equals("") || civico.equals("") || cap.equals("") || prov.equals("") || nome.equals("")) throw new NullPointerException("elemento nullo");
 		
-		//viene cercato se nel DB e' gia' presente il luogo da salvare
+		
+		/**viene cercato se nel DB e' gia' presente il luogo da salvare*/
 		int idToReturn=getIdLuogo(citta,indirizzo,civico,cap,prov,nome);
 		
 		try {
-			if(idToReturn==-1) {//se il luogo non c'e' nel DB viene salvato
+			if(idToReturn==-1) {/**se il luogo non c'e' nel DB viene salvato*/
 				
-				String query="insert into luogo(citta,indirizzo,civico,cap,provincia,nome) "
+				String query="INSERT INTO luogo(citta,indirizzo,civico,cap,provincia,nome) "
 						+ "VALUES('"+citta+"','"+indirizzo+"','"+civico+"','"+cap+"','"+prov+"','"+nome+"')";
 				DBConnection.getInstance().insertData(query);
 			}
 			else {
-				//se il luogo e' presente allora esce dal metodo ritornando l'id del luogo
+				/**se il luogo e' presente allora esce dal metodo ritornando l'id del luogo*/
 				return idToReturn;
 			}
 		}catch(SQLException e) {e.printStackTrace();}
-		return idToReturn;
+		return getIdLuogo(citta,indirizzo,civico,cap,prov,nome);
 	}
 	
 	/**
@@ -57,29 +60,26 @@ public class LuogoController {
 	@GetMapping(value="/luoghi/{citta}:{indirizzo}:{civico}:{cap}:{provincia}:{nome}")
 	public  int getIdLuogo(@PathVariable String citta,@PathVariable String indirizzo,@PathVariable String civico
 			,@PathVariable String cap,@PathVariable String prov,@PathVariable String nome) {
+		if(citta==null || indirizzo==null || civico==null || cap==null || prov==null || nome==null) throw new NullPointerException("elemento nullo");
+		else if(citta.equals("") || indirizzo.equals("") || civico.equals("") || cap.equals("") || prov.equals("") || nome.equals("")) throw new NullPointerException("elemento nullo");
 		
 		try {			
-			String query="select id from luogo where citta='"+citta+"' "
-					+ "and indirizzo='"+indirizzo+"' "
-					+ "and civico='"+civico+"' "
-					+ "and cap='"+cap+"' "
-					+ "and provincia='"+prov+"' "
-					+ "and nome='"+nome+"' ";
+			String query="SELECT id FROM luogo WHERE citta='"+citta+"' "
+					+ "AND indirizzo='"+indirizzo+"' "
+					+ "AND civico='"+civico+"' "
+					+ "AND cap='"+cap+"' "
+					+ "AND provincia='"+prov+"' "
+					+ "AND nome='"+nome+"' ";
 			
-			ResultSet result=null;
-		
+			ResultSet result= DBConnection.getInstance().sendQuery(query);
 			
-			result = DBConnection.getInstance().sendQuery(query);
-			
-			while(result.next()) {
-				return result.getInt(1);
-			}
+			while(result.next()) {	return result.getInt(1);	}
 		
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return -1;
 		}
 		return -1;
-
 	}
+	
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import unicam.trentaEFrode.domain.DBConnection;
@@ -16,7 +17,7 @@ import unicam.trentaEFrode.domain.UtenteRegistrato;
 public class CategorieController {
 
 	@GetMapping(value="/cat")
-	public  String postCategorie() {
+	public String getCategorie() {
 		
 		String json="";
 		ResultSet result=null;
@@ -24,10 +25,10 @@ public class CategorieController {
 			result=DBConnection.getInstance().sendQuery("SELECT * FROM categoria");
 			
 			while(result.next()) {
-				json+=result.getInt(1)+":"+result.getString(2)+":"+result.getString(3)+"_";
+				json+=result.getInt(1)+"-"+result.getString(2)+"-"+result.getString(3)+"_";
 			}
 			
-			json=json.substring(0, json.length()-1);
+			//json=json.substring(0, json.length()-1);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -35,4 +36,26 @@ public class CategorieController {
 		//list.stream().forEach(ele->ele.toString());
 		return json;
 	}
+	
+	@GetMapping(value="/cat/{id}")
+	public String getCategoria(@PathVariable String id) {
+		if(id.equals("")) throw new IllegalArgumentException("Elemento vuoto");
+		else if(id==null ) throw new NullPointerException("Elemento nullo");
+		
+		String json="";
+		ResultSet result=null;
+		try {
+			result=DBConnection.getInstance().sendQuery("SELECT * FROM categoria WHERE id='"+id+"'");
+			
+			while(result.next()) {
+				json+=result.getInt(1)+"-"+result.getString(2)+"-"+result.getString(3);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return json;
+	}
+	
+	
 }

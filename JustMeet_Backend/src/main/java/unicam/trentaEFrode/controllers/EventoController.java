@@ -23,6 +23,7 @@ import unicam.trentaEFrode.domain.DBConnection;
 public class EventoController {
 	
 	
+	
 	/**
 	 * 
 	 * Consente l'inserimento sul database di un nuovo evento
@@ -36,14 +37,16 @@ public class EventoController {
 	 * @param max
 	 * @param descr
 	 * @param durata
+	 * @param nomeLuogo
 	 * @param citta
 	 * @param indirizzo
 	 * @param civico
 	 * @param cap
 	 * @param prov
-	 * @param nomeLuogo
 	 * @param idCat
 	 * @param idUtente
+	 * 
+	 * @throws IllegalArgumentException se uno degli elementi è nullo
 	 * @return
 	 */
 	@PostMapping(value="/eventi/nuovo/{nome}:{aaaa}:{mm}:{gg}:{HH}:{MM}:{min}:"
@@ -55,6 +58,9 @@ public class EventoController {
 			@PathVariable String durata,@PathVariable String nomeLuogo,@PathVariable String citta,@PathVariable String indirizzo,
 			@PathVariable String civico,@PathVariable String cap,@PathVariable String prov,
 			@PathVariable String idCat,@PathVariable String idUtente) {
+		if(nome==null || aaaa==null || mm==null || gg==null || HH==null || MM==null || min==null ||
+			max==null || descr==null || durata==null || nomeLuogo==null || citta==null || indirizzo==null ||
+			civico==null || cap==null || prov==null || idCat==null || idUtente==null ) throw new IllegalArgumentException("elemento nullo");
 				
 		int idLuogo=controllaLuogo(citta, indirizzo, civico, cap, prov, nomeLuogo);
 		

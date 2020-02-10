@@ -26,11 +26,6 @@ import unicam.trentaEFrode.domain.UtenteRegistrato;
 @RestController
 public class UsersControllers {
 	
-	@GetMapping(value="/testConnessione")
-	public boolean getConnessione() {
-		return true;
-	}
-	
 	
 	/**
 	 * Consente di avere i dati di un utente dato il suo id
@@ -39,6 +34,8 @@ public class UsersControllers {
 	 */
 	//@GetMapping(value="/utenti/{id}")
 	public UtenteRegistrato getUserData(@PathVariable String id) {
+		if(id.equals("")) throw new IllegalArgumentException("Elemento vuoto");
+		else if(id==null ) throw new NullPointerException("Elemento nullo");
 		
 		ResultSet result2=null;
 		UtenteRegistrato u=null;
@@ -71,10 +68,7 @@ public class UsersControllers {
 	 * @return una lista di Utenti
 	 * @See List<T>
 	 */
-	@GetMapping(value="/utenti")
 	public List<UtenteRegistrato> getUsers() {
-		
-		//TODO serve?
 		
 		ResultSet result2=null;
 		List<UtenteRegistrato> list=null;
@@ -122,10 +116,11 @@ public class UsersControllers {
 			@PathVariable String ripetiPassword,@PathVariable String dataDiNascita,
 			@PathVariable String cap,@PathVariable String citta,@PathVariable String interessi
 			) {
+		if(nome==null || cognome==null || email==null || nickname==null || password==null || 
+				ripetiPassword==null || dataDiNascita==null || cap==null || citta==null || interessi==null)throw new NullPointerException("Elemento nullo");
+		else if(nome.equals("") || cognome.equals("") || email.equals("") || nickname.equals("") || password.equals("") || 
+				ripetiPassword.equals("") || dataDiNascita.equals("") || cap.equals("") || citta.equals("") || interessi.equals(""))throw new IllegalArgumentException("Elemento vuoto");
 		try {
-			
-			System.out.println("dataDiNascita:"+dataDiNascita);
-			
 			//viene controllato se l'email o il nickName sono gia' stati usati
 			//se il controllo va a buon fine vine fatta una INSERT sul database
 		if(utentePresente(email)==false && nickNamePresente(nickname)==false) {
@@ -302,7 +297,7 @@ public class UsersControllers {
 	}
 
 
-	private String getInteressiUtente(int id) {
+	public String getInteressiUtente(int id) {
 		ResultSet result=null;
 		String json="{";
 		try {
@@ -312,10 +307,9 @@ public class UsersControllers {
 					+ "AND U.idUtente="+id+"";
 			result=DBConnection.getInstance().sendQuery(query);
 			while(result.next()) {
-				json+=result.getInt(1)+":"+result.getString(2)+":"+result.getString(3)+"_";
+				json+=result.getInt(1)+"-"+result.getString(2)+"-"+result.getString(3)+"_";
 			}
-			
-			System.out.println("interessi:"+json.substring(0,json.length()-1)+"}");
+
 			return json.substring(0,json.length()-1)+"}";
 			
 		}catch(SQLException e){
