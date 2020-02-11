@@ -52,7 +52,7 @@ class Luogo_test {
 	public final void postLuogo_Exists_FirstLuogo() {
 		//citta indirizzo civico cap prov nome
 		//"Ascoli","viaTuring","10","63100",  "AP","bar"
-		assertEquals(cont.postluogo("Ascoli","viaTuring","10","63100",  "AP","bar"),1);
+		assertEquals(cont.postluogo("Ascoli","viaTuring","10","63100","AP","bar"),1);
 	}
 	
 	@Test

@@ -19,7 +19,7 @@ class Categorie_test {
 	
 	@Test
 	public final void getCategoria() {
-		assertEquals("1.sport.calcio", cont.getCategoria("1"));
+		assertEquals("1-sport-calcio", cont.getCategoria("1"));
 	}
 
 }
