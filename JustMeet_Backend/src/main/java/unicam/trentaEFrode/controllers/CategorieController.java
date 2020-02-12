@@ -33,7 +33,6 @@ public class CategorieController {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		//list.stream().forEach(ele->ele.toString());
 		return json;
 	}
 	

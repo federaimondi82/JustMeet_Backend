@@ -39,7 +39,7 @@ public class LuogoController {
 		int idToReturn=getIdLuogo(citta,indirizzo,civico,cap,prov,nome);
 		
 		try {
-			if(idToReturn==-1) {/**se il luogo non c'e' nel DB viene salvato*/
+			if(idToReturn==-1) {/**se nel DB il luogo non c'e' viene poi salvato*/
 				
 				String query="INSERT INTO luogo(citta,indirizzo,civico,cap,provincia,nome) "
 						+ "VALUES('"+citta+"','"+indirizzo+"','"+civico+"','"+cap+"','"+prov+"','"+nome+"')";

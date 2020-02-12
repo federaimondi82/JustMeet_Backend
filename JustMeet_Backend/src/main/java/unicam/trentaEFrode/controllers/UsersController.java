@@ -24,7 +24,7 @@ import unicam.trentaEFrode.domain.UtenteRegistrato;
  *
  */
 @RestController
-public class UsersControllers {
+public class UsersController {
 	
 	
 	/**
