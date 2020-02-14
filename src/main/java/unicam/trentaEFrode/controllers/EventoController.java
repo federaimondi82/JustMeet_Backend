@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLDataException;
 import java.sql.SQLException;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -210,7 +211,7 @@ public class EventoController {
 
 			while(result.next()){
 				str+="{";
-				for(int i = 1; i < 20 ; i++) {
+				for(int i = 1; i < 19 ; i++) {
 					try {
 						str+=result.getInt(i);
 					}catch(NumberFormatException | DataConversionException | SQLDataException e) {
@@ -251,9 +252,80 @@ public class EventoController {
 	}
 
 	@GetMapping(value="/eventi/{id}")
-	public String getEvento(@PathVariable String id) {
+	public String getEvento(@PathVariable String id){
+		String query="SELECT "
+				+ "E.id,E.nome,E.data,E.orario,E.min,E.max,E.descrizione,E.durata,E.idUtente,"
+				+ "L.nome,L.indirizzo,L.civico,L.cap,L.citta,L.provincia,"
+				+ "C.id,C.nome,C.descrizione "
+				+ "FROM luogo L,evento E,categoria C,utente U "
+				+ "WHERE E.id="+Integer.parseInt(id)+" "
+				+ "AND E.idLuogo=L.id "
+				+ "AND C.id=E.idCategoria";
+		String str = "";
+		ResultSet result;
+		try {
+			result = DBConnection.getInstance().sendQuery(query);
 		
-		return null;
+			while(result.next()){
+				str+="{";
+				for(int i = 1; i < 19 ; i++) {
+					try {
+						str+=result.getInt(i);
+					}catch(NumberFormatException | DataConversionException | SQLDataException e) {
+						str += result.getString(i);
+					};
+					str += "-";
+				}
+				str +="};"; 
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		return str;
 		
+	}
+	
+	@GetMapping(value="/eventi")
+	public String getEventi(){
+		String query="SELECT "
+				+ "E.id,E.nome,E.data,E.orario,E.min,E.max,E.descrizione,E.durata,E.idUtente,"
+				+ "L.nome,L.indirizzo,L.civico,L.cap,L.citta,L.provincia,"
+				+ "C.id,C.nome,C.descrizione "
+				+ "FROM luogo L,evento E,categoria C,utente U "
+				+ "WHERE E.idLuogo=L.id "
+				+ "AND C.id=E.idCategoria";
+		String str = "";
+		ResultSet result;
+		try {
+			result = DBConnection.getInstance().sendQuery(query);
+		
+			while(result.next()){
+				str+="{";
+				for(int i = 1; i < 19 ; i++) {
+					try {
+						str+=result.getInt(i);
+					}catch(NumberFormatException | DataConversionException | SQLDataException e) {
+						str += result.getString(i);
+					};
+					str += "-";
+				}
+				str +="};"; 
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		return str;
+		
+	}
+	@DeleteMapping(value = "/eventi/cancella/{id}")
+	public boolean cancellaEvento(@PathVariable String id) {
+		String query = "DELETE FROM eventi WHERE id = " + Integer.parseInt(id); 
+		try {
+			DBConnection.getInstance().sendQuery(query);
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 }
