@@ -139,8 +139,9 @@ public class DBConnection {
 		Statement stat=null;
 		try {
 			stat=con.createStatement();
-			int i=stat.executeUpdate(query);
+			stat.executeUpdate(query);
 		} catch (SQLException e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;

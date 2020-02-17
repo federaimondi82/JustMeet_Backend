@@ -67,7 +67,7 @@ public class EventoController {
 			max.equals("")|| descr.equals("")|| durata.equals("")|| nomeLuogo.equals("")|| citta.equals("")|| indirizzo.equals("")||
 			civico.equals("")|| cap.equals("")|| prov.equals("")|| idCat.equals("")|| idUtente.equals("")) throw new IllegalArgumentException("elemento nullo");
 		
-		String data=aaaa+"/"+mm+"/"+gg;
+		String data=aaaa+"-"+mm+"-"+gg;
 		String ora=HH+":"+MM;
 		int idLuogo = controllaLuogo(citta, indirizzo, civico, cap, prov, nomeLuogo);
 
@@ -81,19 +81,15 @@ public class EventoController {
 	private boolean modificaEvento(String id, String nome, String data, String ora, int min, int max,
 			String descr, int durata, int idLuogo, int idCat, int idUtente) {
 		boolean esiste = controllaEvento(nome,data,ora,min,max,durata,idLuogo,idCat);
-		
-		System.out.println("evento controller 84 esiste =" + esiste);
-		
+				
 		if(!esiste) {
 			
 			String query="UPDATE evento SET "
-					+ "nome='"+nome+"', data= '"+data+"',orario='"+ora+"',min="+min+",max="+min+",descrizione='"+descr+"',"
+					+ "nome='"+nome+"', data= "+data+",orario='"+ora+"',min="+min+",max="+min+",descrizione='"+descr+"',"
 					+ "durata="+durata+",idLuogo="+idLuogo+",idCategoria="+idCat+" "
 					+ "WHERE id="+Integer.parseInt(id)+";";
 			try {
-				
-				System.out.println("evento controller 94 query = " + query);
-				
+								
 				return DBConnection.getInstance().insertData(query);
 			}catch(SQLException e) {
 				e.printStackTrace();
@@ -117,6 +113,7 @@ public class EventoController {
 			String query="INSERT into evento(nome,data,orario,min,max,descrizione,durata,idUtente,idLuogo,idCategoria)"
 					+ "VALUES('"+nome+"','"+data+"','"+ora+"',"+min+","+max+",'"+descr+"',"+durata+","+idUtente+","+idLuogo+","+idCat+")";
 			
+			System.out.println("query evento controller = " + query);
 			
 			try {
 				return DBConnection.getInstance().insertData(query);
@@ -124,7 +121,8 @@ public class EventoController {
 				e.printStackTrace();
 				return false;
 			}
-		} return false;
+		} 
+		return false;
 	}
 	
 	/**
@@ -142,11 +140,7 @@ public class EventoController {
 	 * @return false se l'evento non e' gia' stato memorizzato, altrimenti true se c'e'
 	 */
 	private boolean controllaEvento(String nome, String data, String ora, int min, int max,
-			int durata, int idLuogo, int idCategoria) {
-		
-		//boolean trovato=false;
-		ResultSet result=null;
-		
+		int durata, int idLuogo, int idCategoria) {		
 		String query="SELECT id FROM evento "
 				+ "WHERE nome='"+nome+"' "
 				+ "AND data='"+data+"' "
@@ -157,14 +151,10 @@ public class EventoController {
 				+ "AND idLuogo="+idLuogo+" "
 				+ "AND idCategoria="+idCategoria+" ";
 		try {
-			result=DBConnection.getInstance().sendQuery(query);
-			
-			//se result ritorna un valore vuol dire che un evento simile e' presente
+			ResultSet result=DBConnection.getInstance().sendQuery(query);
 			while(result.next()) {
 				return true;
-				//.println(result.getInt(1));
 			}
-			//.println("*************************");
 			return false;
 		}catch(SQLException e) {
 			return false;
@@ -182,8 +172,7 @@ public class EventoController {
 	 * @param nomeLuogo
 	 * @return l'id del luogo presente oppure appena creato
 	 */
-	private int controllaLuogo(String citta, String indirizzo, String civico, String cap, String prov,
-			String nomeLuogo) {
+	private int controllaLuogo(String citta, String indirizzo, String civico, String cap, String prov, String nomeLuogo) {
 		
 		LuogoController luogoController=new LuogoController();
 		//l'id del luogo relativo a questo evento
@@ -194,61 +183,22 @@ public class EventoController {
 	@GetMapping(value="/eventi/utenti/{id}")
 	public String getEventi(@PathVariable String id){
 		
-		String str = "";
 		String query="SELECT "
 				+ "E.id,E.nome,E.data,E.orario,E.min,E.max,E.descrizione,E.durata,E.idUtente,"
 				+ "L.nome,L.indirizzo,L.civico,L.cap,L.citta,L.provincia,"
 				+ "C.id,C.nome,C.descrizione "
 				+ "FROM luogo L,evento E,categoria C,utente U "
-				+ "where U.id="+Integer.parseInt(id)+" "
+				+ "where E.idUtente="+Integer.parseInt(id)+" "
 				+ "and E.idLuogo=L.id "
 				+ "and C.id=E.idCategoria "
 				+ "group by E.id "
 				+ "order by E.data,E.orario";
-		ResultSet result=null;
 		try {
-			result=DBConnection.getInstance().sendQuery(query);
-
-			while(result.next()){
-				str+="{";
-				for(int i = 1; i < 19 ; i++) {
-					try {
-						str+=result.getInt(i);
-					}catch(NumberFormatException | DataConversionException | SQLDataException e) {
-						str += result.getString(i);
-					};
-					str += "-";
-				}
-				str +="};"; 
-			}
-			/*
-				str+="{"+result.getInt(1) + "-" +//idevento
-				result.getString(2) + "-" + // nome
-				result.getString(3) + "-" + // data
-				result.getString(4) + "-" + // ora
-				result.getInt(5) + "-" + // min
-				result.getInt(6) + "-" + // max
-				result.getString(7) + "-" + //descr
-				result.getInt(8) + "-"+ // durata
-				result.getInt(9) + "-" + // idutente
-				result.getInt(10) + "-"+ // id citta
-				result.getString(11) + "-" +//citta
-				result.getString(12) + "-" +//indir
-				result.getString(13) + "-" +//civico
-				result.getString(14) + "-" +//cap
-				result.getString(15) + "-" +//prov
-				result.getString(16) + "-" +//nomeluogo
-				result.getInt(17) + "-" + //id cat
-				result.getString(18) + "-" + //nome cat
-				result.getString(19) + "};"; //descr cat
-				
-			}*/
-		}catch(SQLException e) {
+			return resultSetEventiToString(DBConnection.getInstance().sendQuery(query));
+		} catch (SQLException e) {
 			e.printStackTrace();
+			return "";
 		}
-		
-		
-		return str;
 	}
 
 	@GetMapping(value="/eventi/{id}")
@@ -261,28 +211,12 @@ public class EventoController {
 				+ "WHERE E.id="+Integer.parseInt(id)+" "
 				+ "AND E.idLuogo=L.id "
 				+ "AND C.id=E.idCategoria";
-		String str = "";
-		ResultSet result;
 		try {
-			result = DBConnection.getInstance().sendQuery(query);
-		
-			while(result.next()){
-				str+="{";
-				for(int i = 1; i < 19 ; i++) {
-					try {
-						str+=result.getInt(i);
-					}catch(NumberFormatException | DataConversionException | SQLDataException e) {
-						str += result.getString(i);
-					};
-					str += "-";
-				}
-				str +="};"; 
-			}
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		return str;
-		
+			return resultSetEventiToString(DBConnection.getInstance().sendQuery(query));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return "";
+		}	
 	}
 	
 	@GetMapping(value="/eventi")
@@ -294,16 +228,57 @@ public class EventoController {
 				+ "FROM luogo L,evento E,categoria C,utente U "
 				+ "WHERE E.idLuogo=L.id "
 				+ "AND C.id=E.idCategoria";
-		String str = "";
-		ResultSet result;
 		try {
-			result = DBConnection.getInstance().sendQuery(query);
+			return resultSetEventiToString(DBConnection.getInstance().sendQuery(query));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return "";
+		}
 		
+	}
+	
+	@DeleteMapping(value = "/eventi/cancella/{id}")
+	public String cancellaEvento(@PathVariable String id) {
+		String query = "DELETE FROM eventi WHERE id = " + Integer.parseInt(id); 
+		try {
+			DBConnection.getInstance().insertData(query);
+			return "true";
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return "false";
+		}
+	}
+	
+	@GetMapping(value = "/cerca/{parola}:{categoria}:{citta}:{provincia}:{inizio}:{fine}:{idUtente}")
+	public String cerca(@PathVariable String parola, @PathVariable String categoria, @PathVariable String citta, @PathVariable String provincia, @PathVariable String inizio, @PathVariable String fine, @PathVariable String idUtente ) {
+		if(parola != "") parola = "AND E.nome LIKE '% " + parola + "%' ";
+		categoria = categoria != ""? "AND C.nome = '" + categoria + "' " : "AND C.id IN (SELECT idCategoria FROM utentecategoria WHERE idUtente = " + Integer.parseInt(idUtente) + ") ";
+		citta = "AND (L.citta = '" + (citta != ""? citta: "(SELECT citta FROM utente WHERE id = " + Integer.parseInt(idUtente) + ")") + "' ";
+		provincia = "OR L.provincia = '" + (provincia != ""? provincia: "(SELECT provincia FROM utente WHERE id = " + Integer.parseInt(idUtente) + ")") + "') ";
+		
+		
+		String query="SELECT "
+				+ "E.id,E.nome,E.data,E.orario,E.min,E.max,E.descrizione,E.durata,E.idUtente,"
+				+ "L.nome,L.indirizzo,L.civico,L.cap,L.citta,L.provincia,"
+				+ "C.id,C.nome,C.descrizione "
+				+ "FROM luogo L,evento E,categoria C,utente U "
+				+ "WHERE E.idLuogo=L.id "
+				+ "AND C.id=E.idCategoria";
+	}
+	
+	
+	
+	
+	
+	public String resultSetEventiToString(ResultSet result) {
+		String str = "";
+		try {
 			while(result.next()){
 				str+="{";
 				for(int i = 1; i < 19 ; i++) {
 					try {
-						str+=result.getInt(i);
+						if(i == 3) str += result.getDate(3).toString().replace("-", "/");
+						else str+=result.getInt(i);
 					}catch(NumberFormatException | DataConversionException | SQLDataException e) {
 						str += result.getString(i);
 					};
@@ -311,21 +286,10 @@ public class EventoController {
 				}
 				str +="};"; 
 			}
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		return str;
-		
-	}
-	@DeleteMapping(value = "/eventi/cancella/{id}")
-	public boolean cancellaEvento(@PathVariable String id) {
-		String query = "DELETE FROM eventi WHERE id = " + Integer.parseInt(id); 
-		try {
-			DBConnection.getInstance().sendQuery(query);
-			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
 		}
+		return str;
 	}
+	
 }
