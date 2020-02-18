@@ -85,7 +85,7 @@ public class EventoController {
 		if(!esiste) {
 			
 			String query="UPDATE evento SET "
-					+ "nome='"+nome+"', data= "+data+",orario='"+ora+"',min="+min+",max="+min+",descrizione='"+descr+"',"
+					+ "nome='"+nome+"', data= '"+data+"',orario='"+ora+"',min="+min+",max="+min+",descrizione='"+descr+"',"
 					+ "durata="+durata+",idLuogo="+idLuogo+",idCategoria="+idCat+" "
 					+ "WHERE id="+Integer.parseInt(id)+";";
 			try {

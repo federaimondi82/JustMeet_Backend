@@ -13,6 +13,7 @@ public class UtenteRegistrato {
 	private String dataDiNascita;
 	private String citta;
 	private String cap;
+	private String provincia;
 	private String interessi;
 	
 	public UtenteRegistrato() {
@@ -173,7 +174,23 @@ public class UtenteRegistrato {
 	public String toString() {
 		return id + "," + nome + "," + cognome + "," + email
 				+ "," + nickname + "," + password + "," + ripetiPassword
-				+ "," + dataDiNascita + "," + citta + "," + cap+","+interessi;
+				+ "," + dataDiNascita + "," + citta + "," + cap+","+ provincia + "," + interessi;
+	}
+
+
+	/**
+	 * @return the provincia
+	 */
+	public String getProvincia() {
+		return provincia;
+	}
+
+
+	/**
+	 * @param provincia the provincia to set
+	 */
+	public void setProvincia(String provincia) {
+		this.provincia = provincia;
 	}
 
 	
