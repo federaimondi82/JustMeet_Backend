@@ -49,8 +49,6 @@ public class EventoController {
 	 * @throws IllegalArgumentException se uno degli elementi è nullo
 	 * @return
 	 */
-	//http://localhost:8080/eventi/nuovo/3:2134:2020:3:13:15:38:10:100:festa:5:Ascoli:AP:viaTuring:1800:63100:bar:2:2
-
 	@PostMapping(value="/eventi/nuovo/{id}:{nome}:{aaaa}:{mm}:{gg}:{HH}:{MM}:{min}:"
 			+ "{max}:{descr}:{durata}:{nomeLuogo}:{indirizzo}:{civico}:"
 			+ "{cap}:{citta}:{prov}:{idCat}:{idUtente}")
@@ -112,9 +110,7 @@ public class EventoController {
 		if(!esiste) {
 			String query="INSERT into evento(nome,data,orario,min,max,descrizione,durata,idUtente,idLuogo,idCategoria)"
 					+ "VALUES('"+nome+"','"+data+"','"+ora+"',"+min+","+max+",'"+descr+"',"+durata+","+idUtente+","+idLuogo+","+idCat+")";
-			
-			System.out.println("query evento controller = " + query);
-			
+						
 			try {
 				return DBConnection.getInstance().insertData(query);
 			}catch(SQLException e) {
@@ -239,14 +235,18 @@ public class EventoController {
 	
 	@DeleteMapping(value = "/eventi/cancella/{id}")
 	public String cancellaEvento(@PathVariable String id) {
-		String query = "DELETE FROM eventi WHERE id = " + Integer.parseInt(id); 
-		try {
-			DBConnection.getInstance().insertData(query);
-			return "true";
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return "false";
+		
+		if(PartecipanteController.getInstance().controllaPartecipanti(id)) {
+			String query = "DELETE FROM evento WHERE id = " + Integer.parseInt(id); 
+			try {
+				DBConnection.getInstance().insertData(query);
+				return "true";
+			} catch (SQLException e) {
+				e.printStackTrace();
+				
+			}
 		}
+		return "false";
 	}
 	
 	@GetMapping(value = "/cerca/{parola}:{categoria}:{citta}:{provincia}:{inizioAnno}:{inizioMese}:{inizioGiorno}:{fineAnno}:{fineMese}:{fineGiorno}:{idUtente}")
@@ -254,7 +254,6 @@ public class EventoController {
 			@PathVariable String citta, @PathVariable String provincia, @PathVariable String inizioAnno, @PathVariable String inizioMese, @PathVariable String inizioGiorno, 
 			@PathVariable String fineAnno, @PathVariable String fineMese, @PathVariable String fineGiorno, @PathVariable String idUtente ) {
 		
-		System.out.println("eventoCOntroller 255 parola = " + parola + " \n parola == null =" + (parola == null) + " \n parola == 'null'" + (parola.equals("null")) );
 		String inizio = inizioAnno + "-" + inizioMese + "-" + inizioGiorno;
 		String fine = fineAnno + "-" + fineMese + "-" + fineGiorno;
 
@@ -272,10 +271,9 @@ public class EventoController {
 				+ "AND E.idCategoria = C.id "
 				+ "AND E.idUtente <> " + Integer.parseInt(idUtente) + " AND ("
 				+  categoria + "OR" + citta + "OR" + provincia + "OR" + date + parola +") "
+				+ "AND E.id NOT IN (SELECT idEvento FROM partecipante WHERE idUtente = " + Integer.parseInt(idUtente) + ")"
 				+ "GROUP BY E.id;";
-		
-		System.out.println("query di ricerca 269 evento controller = \n" + query);
-		
+				
 		try {
 			return resultSetEventiToString(DBConnection.getInstance().sendQuery(query));
 		} catch (SQLException e) {

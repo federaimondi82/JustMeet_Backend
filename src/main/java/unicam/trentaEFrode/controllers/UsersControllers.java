@@ -104,10 +104,7 @@ public class UsersControllers {
 		String[] parser=interessi.split("_");
 		String subQuery="";
 		for(int i=0;i<=parser.length-1;i++)  subQuery+="("+id+","+parser[i]+"),";
-
-		
 		String query="INSERT INTO utentecategoria(idUtente,idCategoria) VALUES"+subQuery.substring(0, subQuery.length()-1)+";";
-		//String queryMigliorata=query.substring(0, query.length()-1)+";";
 		try {
 			DBConnection.getInstance().insertData(query);
 		} catch (SQLException e) {
@@ -140,7 +137,7 @@ public class UsersControllers {
 	 * @param email : l'email dell'utente che tenta di registarsi
 	 * @return true se l'utente e' presente nel database,altrimanti false
 	 */
-	@GetMapping(value="utenti/{email}")
+	@GetMapping(value="/utenti/{email}")
 	public boolean utentePresente(@PathVariable String email){
 		String query="SELECT id from utente where email='"+email+"'";
 		try {
@@ -188,9 +185,6 @@ public class UsersControllers {
 		
 		String query="SELECT * FROM utente WHERE email='"+email+"' AND pass='"+pass+"';";
 		
-		System.out.println("users controller 19 query = " + query);
-
-		
 		String str= "";
 		try {
 			ResultSet result=DBConnection.getInstance().sendQuery(query);
@@ -205,16 +199,10 @@ public class UsersControllers {
 				str+=":";
 				}	
 			}
-			
-			System.out.println("users controller 206 str = " + str);
-
 			return str;
 		} catch (SQLException e) {
-			System.out.println("SI è VERIFICATO UN ERRORE DURANTE L'AUTENTICAZIONE");
-			e.printStackTrace();
-		
+			e.printStackTrace();		
 		}
-		
 		return "";
 	}
 
