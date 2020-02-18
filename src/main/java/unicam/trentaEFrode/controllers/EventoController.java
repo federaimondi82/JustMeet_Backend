@@ -249,21 +249,39 @@ public class EventoController {
 		}
 	}
 	
-	@GetMapping(value = "/cerca/{parola}:{categoria}:{citta}:{provincia}:{inizio}:{fine}:{idUtente}")
-	public String cerca(@PathVariable String parola, @PathVariable String categoria, @PathVariable String citta, @PathVariable String provincia, @PathVariable String inizio, @PathVariable String fine, @PathVariable String idUtente ) {
-		if(parola != "") parola = "AND E.nome LIKE '% " + parola + "%' ";
-		categoria = categoria != ""? "AND C.nome = '" + categoria + "' " : "AND C.id IN (SELECT idCategoria FROM utentecategoria WHERE idUtente = " + Integer.parseInt(idUtente) + ") ";
-		citta = "AND (L.citta = '" + (citta != ""? citta: "(SELECT citta FROM utente WHERE id = " + Integer.parseInt(idUtente) + ")") + "' ";
-		provincia = "OR L.provincia = '" + (provincia != ""? provincia: "(SELECT provincia FROM utente WHERE id = " + Integer.parseInt(idUtente) + ")") + "') ";
+	@GetMapping(value = "/cerca/{parola}:{categoria}:{citta}:{provincia}:{inizioAnno}:{inizioMese}:{inizioGiorno}:{fineAnno}:{fineMese}:{fineGiorno}:{idUtente}")
+	public String cerca(@PathVariable String parola, @PathVariable String categoria, 
+			@PathVariable String citta, @PathVariable String provincia, @PathVariable String inizioAnno, @PathVariable String inizioMese, @PathVariable String inizioGiorno, 
+			@PathVariable String fineAnno, @PathVariable String fineMese, @PathVariable String fineGiorno, @PathVariable String idUtente ) {
 		
-		
+		System.out.println("eventoCOntroller 255 parola = " + parola + " \n parola == null =" + (parola == null) + " \n parola == 'null'" + (parola.equals("null")) );
+		String inizio = inizioAnno + "-" + inizioMese + "-" + inizioGiorno;
+		String fine = fineAnno + "-" + fineMese + "-" + fineGiorno;
+
+		parola = !parola.equals("null")? "OR E.nome LIKE '%" + parola + "%' " : "";
+		categoria = !categoria.equals("null")? " C.nome = '" + categoria + "' " : " C.id IN (SELECT idCategoria FROM utentecategoria WHERE idUtente = " + Integer.parseInt(idUtente) + ") ";
+		citta = !citta.equals("null")? " L.citta = '" +  citta + "' " : " L.citta IN (SELECT citta FROM utente WHERE id = " + Integer.parseInt(idUtente) + ") ";
+		provincia = !provincia.equals("null")? " L.provincia = '" + provincia + "' " : " L.provincia IN (SELECT provincia FROM utente WHERE id = " + Integer.parseInt(idUtente) + ") ";
+		String date = " data BETWEEN '" + inizio + "' AND '" + fine + "' ";	
 		String query="SELECT "
-				+ "E.id,E.nome,E.data,E.orario,E.min,E.max,E.descrizione,E.durata,E.idUtente,"
-				+ "L.nome,L.indirizzo,L.civico,L.cap,L.citta,L.provincia,"
-				+ "C.id,C.nome,C.descrizione "
-				+ "FROM luogo L,evento E,categoria C,utente U "
-				+ "WHERE E.idLuogo=L.id "
-				+ "AND C.id=E.idCategoria";
+				+ "E.id, E.nome, E.data, E.orario, E.min, E.max, E.descrizione, E.durata, E.idUtente, "
+				+ "L.nome, L.indirizzo, L.civico, L.cap, L.citta, L.provincia, "
+				+ "C.id, C.nome, C.descrizione "
+				+ "FROM luogo L, evento E, categoria C, utente U "
+				+ "WHERE E.idLuogo = L.id "
+				+ "AND E.idCategoria = C.id "
+				+ "AND E.idUtente <> " + Integer.parseInt(idUtente) + " AND ("
+				+  categoria + "OR" + citta + "OR" + provincia + "OR" + date + parola +") "
+				+ "GROUP BY E.id;";
+		
+		System.out.println("query di ricerca 269 evento controller = \n" + query);
+		
+		try {
+			return resultSetEventiToString(DBConnection.getInstance().sendQuery(query));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return "";
+		}
 	}
 	
 	
