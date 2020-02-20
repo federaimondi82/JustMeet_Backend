@@ -1,7 +1,9 @@
 package unicam.trentaEFrode.controllers;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +18,7 @@ import unicam.trentaEFrode.domain.DBConnection;
 public class PartecipanteController {
 	
 	private static PartecipanteController instance= null;
+	
 	@PostMapping(value = "/partecipa/{idEvento}:{idUtente}")
 	public boolean partecipa(@PathVariable String idEvento, @PathVariable String idUtente) {
 		String query = "INSERT INTO partecipante(idEvento, idUtente) VALUES (" + Integer.parseInt(idEvento) + ", " + Integer.parseInt(idUtente) + ");";
@@ -28,7 +31,7 @@ public class PartecipanteController {
 		}
 	}
 	
-	@GetMapping(value = "/partecipa/disdici/{idEvento}:{idUtente}")
+	@DeleteMapping(value = "/partecipa/disdici/{idEvento}:{idUtente}")
 	public boolean disdiciPartecipazione(@PathVariable String idEvento, @PathVariable String idUtente) {
 		String query = "DELETE FROM partecipante WHERE idUtente = " + Integer.parseInt(idUtente) + " AND idEvento = " + Integer.parseInt(idEvento);
 		try {
@@ -72,6 +75,23 @@ public class PartecipanteController {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	@GetMapping(value ="/partecipa/partecipanti/{idEvento}")
+	public String getPartecipanti(@PathVariable String idEvento) {
+		String query = "SELECT id, nome, cognome, email FROM utente WHERE id IN(SELECT idUtente FROM partecipante WHERE idEvento = "+  idEvento + ")";
+		String str = "";
+		ResultSet result;
+		try {
+			result = DBConnection.getInstance().sendQuery(query);
+			while(result.next()) {
+				str += result.getInt(1) + "-" + result.getString(2) + "-" + result.getString(3)+ "-" + result.getString(4) + ",";
+			}
+			return str;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 	

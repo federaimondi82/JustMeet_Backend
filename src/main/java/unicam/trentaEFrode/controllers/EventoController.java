@@ -184,9 +184,9 @@ public class EventoController {
 				+ "L.nome,L.indirizzo,L.civico,L.cap,L.citta,L.provincia,"
 				+ "C.id,C.nome,C.descrizione "
 				+ "FROM luogo L,evento E,categoria C,utente U "
-				+ "where E.idUtente="+Integer.parseInt(id)+" "
-				+ "and E.idLuogo=L.id "
-				+ "and C.id=E.idCategoria "
+				+ "WHERE E.idUtente="+Integer.parseInt(id)+" "
+				+ "AND E.idLuogo=L.id "
+				+ "AND C.id=E.idCategoria "
 				+ "group by E.id "
 				+ "order by E.data,E.orario";
 		try {
@@ -308,4 +308,16 @@ public class EventoController {
 		return str;
 	}
 	
+	@PostMapping(value= "/evento/cambiaorganizzatore/{idEvento}:{idOrganizzatore}:{idVecchioOrganizzatore}")
+	public boolean cambiaOrganizzatore(@PathVariable String idEvento, @PathVariable String idOrganizzatore,@PathVariable String idVecchioOrganizzatore ){
+		String query = "UPDATE evento SET idUtente = " + idOrganizzatore + " WHERE id = " + idEvento;
+		PartecipanteController.getInstance().disdiciPartecipazione(idEvento, idOrganizzatore);
+		PartecipanteController.getInstance().partecipa(idEvento, idVecchioOrganizzatore);
+		try {
+			return DBConnection.getInstance().insertData(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

@@ -2,11 +2,10 @@ package unicam.trentaEFrode.domain;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
+
+import unicam.trentaEFrode.controllers.CategorieController;
 
 /**
  * La classe per registrare le nuove categorie disponibili nel database
@@ -51,7 +50,6 @@ public class CategorieLoader {
 		//carica il file con le categorie (nome e descrizione)
 		File fileCategorie=new File(System.getProperty("user.dir")+"\\plugin\\categorie.txt");
 		List<String> listCat=null;
-		HashMap<String,String> mapCat=new HashMap<String,String>();
 		
 		try {
 			//legge il file e per ogni linea memorizza i dati in un generic String String
@@ -68,14 +66,10 @@ public class CategorieLoader {
 	}
 	
 	private static void initCategorie(List<String> listCat) {
-		
+		CategorieController contr = new CategorieController();
 		listCat.stream().forEach(ele->{
 			String[] s=ele.split(";");
-			try {
-				DBConnection.getInstance().insertData("insert into categoria(id,nome,descrizione) values('"+s[0]+"','"+s[1]+"','"+s[2]+"')");
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			if(contr.getCategoria(s[0]) == "") contr.insertCategoria(s[1], s[2]);
 		});
 
 		

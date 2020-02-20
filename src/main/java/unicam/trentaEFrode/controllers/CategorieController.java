@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import unicam.trentaEFrode.domain.DBConnection;
 
+/**
+ * Controller relativo a tutte le chiamate rest riguardanti le categorie.
+ * */
 @RestController
 public class CategorieController {
 
@@ -23,13 +26,10 @@ public class CategorieController {
 			while(result.next()) {
 				json+=result.getInt(1)+"-"+result.getString(2)+"-"+result.getString(3)+"_";
 			}
-			
-			//json=json.substring(0, json.length()-1);
-			
+						
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		//list.stream().forEach(ele->ele.toString());
 		return json;
 	}
 	
@@ -50,6 +50,15 @@ public class CategorieController {
 			e.printStackTrace();
 		}
 		return json;
+	}
+	
+	public boolean insertCategoria(String nome, String descrizione) {
+		try {
+			return DBConnection.getInstance().insertData("INSERT INTO categoria(nome, descrizione) VALUES (' " + nome + "', '" + descrizione + "')");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	
