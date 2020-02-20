@@ -43,7 +43,6 @@ class UserTest {
 		assertThrows(NullPointerException.class, ()->contr.registraUtente("mario", "rossi", "mario@gmail.com", "marione", "asd", "asd", "1880-12-12", "63100", "ASCULE", "AP", null));
 	
 		String rand=String.valueOf((int)(Math.random()*10000));
-		System.out.println(rand);
 		
 		assertTrue(contr.registraUtente("mario", "rossi", rand+"@gmail.com", rand, "asd", "asd", "1980-12-12", "63100", "ASCULE", "AP", "2_3_1_"));
 		assertFalse(contr.registraUtente("mario", "rossi", rand+"@gmail.com", rand, "asd", "asd", "1980-12-12", "63100", "ASCULE", "AP", "2_3_1_"));
