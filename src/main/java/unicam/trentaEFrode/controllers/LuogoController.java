@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import unicam.trentaEFrode.domain.DBConnection;
 
+/**
+*
+*Controller per le chiamate REST riguardo ai luoghi dove si svolgono gli eventi
+*/
 public class LuogoController {
 
 	

@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import unicam.trentaEFrode.controllers.LuogoController;
@@ -19,7 +17,7 @@ class Luogo_test {
 	public final void getIdLuogo_Exists() {
 		//citta indirizzo civico cap prov nome
 		//"Ascoli","viaTuring","10","63100",  "AP","bar"
-		assertEquals(cont.getIdLuogo("Ascoli","viaTuring","10","63100",  "AP","bar"),1);
+		assertEquals(1, cont.postluogo("Ascoli","viaTuring","1197","63100","AP","bar"));
 	}
 	
 	@Test
@@ -46,13 +44,6 @@ class Luogo_test {
 		assertThrows(NullPointerException.class, ()->cont.getIdLuogo("Ascoli","viaTuring","10","",  "AP","bar"));
 		assertThrows(NullPointerException.class, ()->cont.getIdLuogo("Ascoli","viaTuring","10","63100","","bar"));
 		assertThrows(NullPointerException.class, ()->cont.getIdLuogo("Ascoli","viaTuring","10","63100",  "AP",""));
-	}
-		
-	@Test
-	public final void postLuogo_Exists_FirstLuogo() {
-		//citta indirizzo civico cap prov nome
-		//"Ascoli","viaTuring","10","63100",  "AP","bar"
-		assertEquals(cont.postluogo("Ascoli","viaTuring","10","63100","AP","bar"),1);
 	}
 	
 	@Test

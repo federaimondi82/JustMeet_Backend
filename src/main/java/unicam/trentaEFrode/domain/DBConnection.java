@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 
-/**Fornisce una interfaccia unificata per inviare e ricevere informazioni al/dal database
- * @author feder
+/**
+ * Fornisce una interfaccia unificata per inviare e ricevere informazioni al/dal database
  *
  */
 public class DBConnection {

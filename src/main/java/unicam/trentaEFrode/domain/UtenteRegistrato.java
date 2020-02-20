@@ -1,5 +1,9 @@
 package unicam.trentaEFrode.domain;
 
+/**
+ *Classe per modellizzare un Utente
+ *
+*/
 public class UtenteRegistrato {
 
 	private int id;

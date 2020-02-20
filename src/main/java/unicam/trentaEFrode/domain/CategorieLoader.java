@@ -11,7 +11,6 @@ import unicam.trentaEFrode.controllers.CategorieController;
  * La classe per registrare le nuove categorie disponibili nel database
  * Ad ogni avvio del server viene controllata la presenza delle categorie, scelte dal team,
  * sul database, se non ci sono le salva(nel caso in cui il server non sia mai stati avviato)
- * @author feder
  *
  */
 public class CategorieLoader {
@@ -22,29 +21,16 @@ public class CategorieLoader {
 		
 	}
 	
+/**
+*Metodo per accedere al Singleton
+*/
 	public static CategorieLoader getInstance() {
 		if(instance==null) instance=new CategorieLoader();
 		return instance;
 	}
 	
 	/**
-	 * Carica a tempo di compilazione delle stringhe con le categorie definite dal team di sviluppo
-	 * @return un array di url; gli url di una cartella dove e' possibile caricare file di testo o plugin
-	 * @throws MalformedURLException
-	 */
-	/*
-	public URL[] loadUrls() throws MalformedURLException {
-		String folder=System.getProperty("user.dir");
-		File f=new File(folder+"\\plugin\\");
-
-		URL[] urls= {f.toURI().toURL()};
-		
-		return urls;
-	}
-	*/
-	
-	/**
-	 * 
+	 * Carica  delle stringhe lette da un file di testo
 	 */
 	public void loader() {
 		//carica il file con le categorie (nome e descrizione)
@@ -65,10 +51,15 @@ public class CategorieLoader {
 		
 	}
 	
+	/**
+	 *Permette la memorizzazione di nuove categorie sul database
+	 *Memorizza soltanto quelle categorie che non trova sul dataabase
+	*/
 	private static void initCategorie(List<String> listCat) {
 		CategorieController contr = new CategorieController();
 		listCat.stream().forEach(ele->{
 			String[] s=ele.split(";");
+			//memorizza soltanto quelle categorie che non trova sul dataabase
 			if(contr.getCategoria(s[0]) == "") contr.insertCategoria(s[1], s[2]);
 		});
 

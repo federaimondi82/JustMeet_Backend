@@ -75,18 +75,20 @@ public class UsersControllers {
 			@PathVariable String cap,@PathVariable String citta, @PathVariable String provincia, @PathVariable String interessi
 			) {
 		if(nome==null || cognome==null || email==null || nickname==null || password==null || 
-				ripetiPassword==null || dataDiNascita==null || cap==null || citta==null || interessi==null)throw new NullPointerException("Elemento nullo");
+				ripetiPassword==null || dataDiNascita==null || cap==null || citta==null || provincia==null ||interessi==null)throw new NullPointerException("Elemento nullo");
 		else if(nome.equals("") || cognome.equals("") || email.equals("") || nickname.equals("") || password.equals("") || 
-				ripetiPassword.equals("") || dataDiNascita.equals("") || cap.equals("") || citta.equals("") || interessi.equals(""))throw new IllegalArgumentException("Elemento vuoto");
+				ripetiPassword.equals("") || dataDiNascita.equals("") || cap.equals("") || citta.equals("") || provincia.equals("") ||interessi.equals(""))throw new IllegalArgumentException("Elemento vuoto");
 		try {
 			//viene controllato se l'email o il nickName sono gia' stati usati
 			//se il controllo va a buon fine vine fatta una INSERT sul database
-			if(!utentePresente(email) && !nickNamePresente(nickname)) {
+			boolean esisteEmail = utentePresente(email);
+			boolean esisteNickname = nickNamePresente(nickname);
+			if(!esisteEmail && !esisteNickname) {
 				String query="INSERT INTO utente(nome,cognome,email,nickname,pass,pass2,dataNascita,citta,cap, provincia)"
-						+ "VALUES('"+nome+"','"+cognome+"','"+email+"','"+nickname+"','"+password+"','"+ripetiPassword+"','20/20/2000','"+citta+"','"+Integer.parseInt(cap)+"', ' " + provincia + "')";
-				DBConnection.getInstance().insertData(query);								
-				salvaInteressi(interessi,getUserId(email,password));
-				return true;
+						+ "VALUES('"+nome+"','"+cognome+"','"+email+"','"+nickname+"','"+password+"','"+ripetiPassword+"','" + dataDiNascita + "','"+citta+"','"+Integer.parseInt(cap)+"', '" + provincia + "')";
+				boolean inserito = DBConnection.getInstance().insertData(query);
+				if(inserito) return salvaInteressi(interessi, getUserId(email,password));								
+				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -99,21 +101,19 @@ public class UsersControllers {
 	 * @param interessi una lista sotto form di stringa di id di categorie
 	 * @param id l'id dell'utente a cui associare gli interessi
 	 */
-	private void salvaInteressi(String interessi, int id) {
-		
+	private boolean salvaInteressi(String interessi, int id) {
+		if(interessi == "" | interessi == null) return false;
 		String[] parser=interessi.split("_");
 		String subQuery="";
 		for(int i=0;i<=parser.length-1;i++)  subQuery+="("+id+","+parser[i]+"),";
 		String query="INSERT INTO utentecategoria(idUtente,idCategoria) VALUES"+subQuery.substring(0, subQuery.length()-1)+";";
 		try {
-			DBConnection.getInstance().insertData(query);
+			return DBConnection.getInstance().insertData(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		
+		return false;
 	}
-
 
 	private int getUserId(String email,String pass) {
 		int id=0;
@@ -139,10 +139,12 @@ public class UsersControllers {
 	 */
 	@GetMapping(value="/utenti/{email}")
 	public boolean utentePresente(@PathVariable String email){
+		if(email == "") throw new IllegalArgumentException();
+		if(email == null) throw new NullPointerException();
 		String query="SELECT id from utente where email='"+email+"'";
 		try {
 			ResultSet result = DBConnection.getInstance().sendQuery(query);
-			return result.getFetchSize()>0;
+			return result.next();
 		} catch (SQLException e) {
 			return false;
 		}
@@ -155,22 +157,14 @@ public class UsersControllers {
 	 */
 	@GetMapping(value="/utenti/nickname/{nickname}")
 	public boolean nickNamePresente(@PathVariable String nickname) {
-		
-		ResultSet result=null;
-		int id=0;
+		if(nickname == "") throw new IllegalArgumentException();
+		if(nickname == null) throw new NullPointerException();
 		try {
-			result= DBConnection.getInstance().sendQuery("SELECT id FROM utente WHERE nickname='"+nickname+"'");
-			while(result.next()) {
-				id=result.getInt(1);
-			}
-			if(id!=0) return true;
-			else return false;
-
+			ResultSet result= DBConnection.getInstance().sendQuery("SELECT id FROM utente WHERE nickname='"+nickname+"'");
+			return result.next();
 		} catch (SQLException e) {
-			
 			return false;
 		}
-		
 	}
 
 	
@@ -183,6 +177,8 @@ public class UsersControllers {
 	@GetMapping(value="/utenti/auth/{email}:{pass}")
 	public String autenticazione(@PathVariable String email,@PathVariable String pass) {
 		
+		if(email == "" || pass == "") throw new IllegalArgumentException();
+		if(email == null || pass == null) throw new NullPointerException();
 		String query="SELECT * FROM utente WHERE email='"+email+"' AND pass='"+pass+"';";
 		
 		String str= "";
@@ -207,25 +203,23 @@ public class UsersControllers {
 	}
 
 
+	/**
+	*Permette di conoscere gli interessi di uno specifico utente
+	* @return 
+	*/
 	public String getInteressiUtente(int id) {
-		ResultSet result=null;
-		String json="{";
+		String str="";
 		try {
 			String query="SELECT C.id,C.nome,C.descrizione "
 					+ "FROM Categoria C, utentecategoria U "
 					+ "WHERE C.id=U.idCategoria "
 					+ "AND U.idUtente="+id+"";
-			result=DBConnection.getInstance().sendQuery(query);
+			ResultSet result=DBConnection.getInstance().sendQuery(query);
 			while(result.next()) {
-				json+=result.getInt(1)+"-"+result.getString(2)+"-"+result.getString(3)+"_";
+				str+=result.getInt(1)+"-"+result.getString(2)+"-"+result.getString(3)+"_";
 			}
-
-			return json.substring(0,json.length()-1)+"}";
-			
-		}catch(SQLException e){
-			//altrimenti ritorna null;
-			return null;
-		}
+		}catch(SQLException e){}
+		return str;
 	}
 	
 }

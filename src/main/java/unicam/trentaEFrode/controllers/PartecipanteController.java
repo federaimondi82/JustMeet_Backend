@@ -17,8 +17,14 @@ import unicam.trentaEFrode.domain.DBConnection;
 @RestController
 public class PartecipanteController {
 	
-	private static PartecipanteController instance= null;
 	
+	/**
+	 *metodo di accettazione da parte di un utente ad un evento
+	 *
+	 * @param idEvento l'identificativo dell'evento
+	 * @param idUtente l'identificativo dell'utenteRegistrato
+	 * @return true se l'inseriemnto nel database è andata a buon fine, altrimenti false
+	 */
 	@PostMapping(value = "/partecipa/{idEvento}:{idUtente}")
 	public boolean partecipa(@PathVariable String idEvento, @PathVariable String idUtente) {
 		String query = "INSERT INTO partecipante(idEvento, idUtente) VALUES (" + Integer.parseInt(idEvento) + ", " + Integer.parseInt(idUtente) + ");";
@@ -31,6 +37,12 @@ public class PartecipanteController {
 		}
 	}
 	
+	/**
+	 *Un utente che vuole disdire la propria partecipazione ad un evento
+	 * @param idEvento l'identificativo dell'evento
+	 * @param idUtente l'identificativo dell'utenteRegistrato
+	 * @return true se la cancellazione della partecipazioned dell'utente all'evento è andata a buon fine, altrimenti false
+	 */
 	@DeleteMapping(value = "/partecipa/disdici/{idEvento}:{idUtente}")
 	public boolean disdiciPartecipazione(@PathVariable String idEvento, @PathVariable String idUtente) {
 		String query = "DELETE FROM partecipante WHERE idUtente = " + Integer.parseInt(idUtente) + " AND idEvento = " + Integer.parseInt(idEvento);
@@ -43,6 +55,11 @@ public class PartecipanteController {
 		}
 	}
 	
+	/**
+	 * Per conoscere tutti lgi eventi nei quali l'utente è partecipante
+	 * @param idUtente l'identificativo dell'utente
+	 * @return un insieme di eventi in formato json
+	 */
 	@GetMapping(value = "/partecipa/utente/{idUtente}")
 	public String eventiPartecipati(@PathVariable String idUtente) {
 		String query = "SELECT " +
@@ -61,11 +78,11 @@ public class PartecipanteController {
 		}
 	}
 
-	public static PartecipanteController getInstance() {
-		if(instance == null) instance = new PartecipanteController();
-		return instance;
-	}
-
+	/**
+	 * Cancella tutt ele riche di uno specifico evento sulla tabella dele partecipazioni
+	 * @param idEvento l'identificativo di un evento
+	 * @return treu se la richiesta è stata sffisfatta, false atrimenti
+	 */
 	public boolean controllaPartecipanti(String idEvento) {
 		String query = "DELETE FROM partecipante WHERE idEvento = " + Integer.parseInt(idEvento);
 		try {
@@ -76,7 +93,11 @@ public class PartecipanteController {
 			return false;
 		}
 	}
-	
+	/**
+	*Metodo per conoscere ogni partecipante  di uno specifico evento
+	*@param idEvento: l'ientificativo di un evento
+	*@return la serie di utenti in formato json
+	*/
 	@GetMapping(value ="/partecipa/partecipanti/{idEvento}")
 	public String getPartecipanti(@PathVariable String idEvento) {
 		String query = "SELECT id, nome, cognome, email FROM utente WHERE id IN(SELECT idUtente FROM partecipante WHERE idEvento = "+  idEvento + ")";
