@@ -26,7 +26,7 @@ public class PartecipanteController {
 	 * @return true se l'inseriemnto nel database è andata a buon fine, altrimenti false
 	 */
 	@PostMapping(value = "/partecipa/{idEvento}:{idUtente}")
-	public boolean partecipa(@PathVariable String idEvento, @PathVariable String idUtente) {
+	public boolean partecipa(@PathVariable String idEvento, @PathVariable String idUtente){
 		String query = "INSERT INTO partecipante(idEvento, idUtente) VALUES (" + Integer.parseInt(idEvento) + ", " + Integer.parseInt(idUtente) + ");";
 		try {
 			DBConnection.getInstance().insertData(query);

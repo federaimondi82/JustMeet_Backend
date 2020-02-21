@@ -320,6 +320,7 @@ public class EventoController {
 		citta = !citta.equals("null")? " L.citta = '" +  citta + "' " : " L.citta IN (SELECT citta FROM utente WHERE id = " + Integer.parseInt(idUtente) + ") ";
 		provincia = !provincia.equals("null")? " L.provincia = '" + provincia + "' " : " L.provincia IN (SELECT provincia FROM utente WHERE id = " + Integer.parseInt(idUtente) + ") ";
 		String date = " data BETWEEN '" + inizio + "' AND '" + fine + "' ";	
+		//TODO Ricercare solo gli eventi che non hanno raggiunto il numero massimo di partecipanti.
 		String query="SELECT "
 				+ "E.id, E.nome, E.data, E.orario, E.min, E.max, E.descrizione, E.durata, E.idUtente, "
 				+ "L.nome, L.indirizzo, L.civico, L.cap, L.citta, L.provincia, "
